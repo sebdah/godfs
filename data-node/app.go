@@ -12,13 +12,14 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	files := r.Path("/files/{id}").Subrouter()
-	files.Methods("POST").HandlerFunc(FileCreateHandle)
+	file := r.Path("/files/{id}").Subrouter()
+	file.Methods("GET").HandlerFunc(FileGetHandler)
+	file.Methods("POST").HandlerFunc(FileCreateHandler)
 
 	http.ListenAndServe(":8000", r)
 }
 
-func FileCreateHandle(rw http.ResponseWriter, r *http.Request) {
+func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	path := "/Users/sebastian/" + id
 	body, _ := ioutil.ReadAll(r.Body)
@@ -30,4 +31,13 @@ func FileCreateHandle(rw http.ResponseWriter, r *http.Request) {
 	f.Sync()
 
 	fmt.Fprintf(rw, "Created file with id: %s", id)
+}
+
+func FileGetHandler(rw http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	path := "/Users/sebastian/" + id
+
+	data, _ := ioutil.ReadFile(path)
+
+	fmt.Fprint(rw, string(data))
 }
