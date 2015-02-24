@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -19,9 +20,14 @@ func main() {
 
 func FileCreateHandle(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
+	path := "/Users/sebastian/" + id
 	body, _ := ioutil.ReadAll(r.Body)
 
-	//f, err := os.Create("/home/sebastian/test/")
+	f, _ := os.Create(path)
+	defer f.Close()
 
-	fmt.Fprintf(rw, "Created file with id: %s and data: %s\n", id, body)
+	f.Write(body)
+	f.Sync()
+
+	fmt.Fprintf(rw, "Created file with id: %s", id)
 }
