@@ -15,6 +15,7 @@ func main() {
 	file := r.Path("/files/{id}").Subrouter()
 	file.Methods("GET").HandlerFunc(FileGetHandler)
 	file.Methods("POST").HandlerFunc(FileCreateHandler)
+	file.Methods("PUT").HandlerFunc(FileUpdateHandler)
 	file.Methods("DELETE").HandlerFunc(FileDeleteHandler)
 
 	http.ListenAndServe(":"+os.Getenv("PORT"), r)
@@ -24,6 +25,13 @@ func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	path := "/Users/sebastian/" + id
 	body, _ := ioutil.ReadAll(r.Body)
+
+	// Check if the file exists
+	if _, err := os.Stat(path); err == nil {
+		rw.WriteHeader(http.StatusConflict)
+		rw.Write([]byte("File exists"))
+		return
+	}
 
 	file, err := os.Create(path)
 	if err != nil {
@@ -66,4 +74,37 @@ func FileGetHandler(rw http.ResponseWriter, r *http.Request) {
 
 	rw.WriteHeader(http.StatusOK)
 	rw.Write(data)
+}
+
+func FileUpdateHandler(rw http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	path := "/Users/sebastian/" + id
+	body, _ := ioutil.ReadAll(r.Body)
+
+	// Ensure that the file exists
+	if _, err := os.Stat(path); err != nil {
+		rw.WriteHeader(http.StatusNotFound)
+		rw.Write([]byte("Error: File not found"))
+		return
+	}
+
+	// Delete the file
+	err := os.Remove(path)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		rw.Write([]byte("Error: " + err.Error()))
+		return
+	}
+
+	// Create the file
+	file, err := os.Create(path)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		rw.Write([]byte("Error: " + err.Error()))
+		return
+	}
+	defer file.Close()
+
+	file.Write(body)
+	file.Sync()
 }
