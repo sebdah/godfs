@@ -13,15 +13,15 @@ func main() {
 	r := mux.NewRouter()
 
 	file := r.Path("/files/{id}").Subrouter()
-	file.Methods("GET").HandlerFunc(FileGetHandler)
-	file.Methods("POST").HandlerFunc(FileCreateHandler)
-	file.Methods("PUT").HandlerFunc(FileUpdateHandler)
-	file.Methods("DELETE").HandlerFunc(FileDeleteHandler)
+	file.Methods("GET").HandlerFunc(GetHandler)
+	file.Methods("POST").HandlerFunc(CreateHandler)
+	file.Methods("PUT").HandlerFunc(UpdateHandler)
+	file.Methods("DELETE").HandlerFunc(DeleteHandler)
 
 	http.ListenAndServe(":"+os.Getenv("PORT"), r)
 }
 
-func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
+func CreateHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	path := "/Users/sebastian/" + id
 	body, _ := ioutil.ReadAll(r.Body)
@@ -48,7 +48,7 @@ func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	log.Printf("Created file with id: %s\n", id)
 }
 
-func FileDeleteHandler(rw http.ResponseWriter, r *http.Request) {
+func DeleteHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	path := "/Users/sebastian/" + id
 
@@ -63,7 +63,7 @@ func FileDeleteHandler(rw http.ResponseWriter, r *http.Request) {
 	log.Printf("Deleted file with id: %s\n", id)
 }
 
-func FileGetHandler(rw http.ResponseWriter, r *http.Request) {
+func GetHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	path := "/Users/sebastian/" + id
 
@@ -77,7 +77,7 @@ func FileGetHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(data)
 }
 
-func FileUpdateHandler(rw http.ResponseWriter, r *http.Request) {
+func UpdateHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	path := "/Users/sebastian/" + id
 	body, _ := ioutil.ReadAll(r.Body)
