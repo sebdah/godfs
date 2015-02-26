@@ -23,5 +23,5 @@ _testmain.go
 *.test
 *.prof
 
-data-node/gin-bin
-data-node/app
+*/gin-bin
+*/server
