@@ -8,3 +8,9 @@ The data node implements the following URIs:
 - `POST /files/{id}` - Create a file with id `{id}`. The contents of the `POST` is the file data
 - `PUT /files/{id}` - Update a file with id `{id}`. The contents of the `PUT` is the file data
 - `DELETE /files/{id}` - Delete file with id `{id}`
+
+### Requirements
+
+The following go packages are required:
+
+	go get github.com/gorilla/mux
