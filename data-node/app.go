@@ -28,6 +28,7 @@ func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		rw.Write([]byte("Error: " + err.Error()))
+		return
 	}
 	defer file.Close()
 
