@@ -16,7 +16,7 @@ func main() {
 	file.Methods("GET").HandlerFunc(FileGetHandler)
 	file.Methods("POST").HandlerFunc(FileCreateHandler)
 
-	http.ListenAndServe(":8000", r)
+	http.ListenAndServe(":"+os.Getenv("PORT"), r)
 }
 
 func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
