@@ -5,9 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 
 	"github.com/gorilla/mux"
 )
+
+var basePath string = os.Getenv("HOME")
 
 func main() {
 	r := mux.NewRouter()
@@ -23,17 +26,17 @@ func main() {
 
 func CreateHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	path := "/Users/sebastian/" + id
+	filePath := path.Join(basePath, id)
 	body, _ := ioutil.ReadAll(r.Body)
 
 	// Check if the file exists
-	if _, err := os.Stat(path); err == nil {
+	if _, err := os.Stat(filePath); err == nil {
 		rw.WriteHeader(http.StatusConflict)
 		rw.Write([]byte("File exists"))
 		return
 	}
 
-	file, err := os.Create(path)
+	file, err := os.Create(filePath)
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		rw.Write([]byte("Error: " + err.Error()))
@@ -50,9 +53,9 @@ func CreateHandler(rw http.ResponseWriter, r *http.Request) {
 
 func DeleteHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	path := "/Users/sebastian/" + id
+	filePath := path.Join(basePath, id)
 
-	err := os.Remove(path)
+	err := os.Remove(filePath)
 	if err != nil {
 		// Better error handling would be nice..
 		rw.WriteHeader(http.StatusNotFound)
@@ -65,9 +68,9 @@ func DeleteHandler(rw http.ResponseWriter, r *http.Request) {
 
 func GetHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	path := "/Users/sebastian/" + id
+	filePath := path.Join(basePath, id)
 
-	data, err := ioutil.ReadFile(path)
+	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		rw.WriteHeader(http.StatusNotFound)
 		return
@@ -79,18 +82,18 @@ func GetHandler(rw http.ResponseWriter, r *http.Request) {
 
 func UpdateHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	path := "/Users/sebastian/" + id
+	filePath := path.Join(basePath, id)
 	body, _ := ioutil.ReadAll(r.Body)
 
 	// Ensure that the file exists
-	if _, err := os.Stat(path); err != nil {
+	if _, err := os.Stat(filePath); err != nil {
 		rw.WriteHeader(http.StatusNotFound)
 		rw.Write([]byte("Error: File not found"))
 		return
 	}
 
 	// Delete the file
-	err := os.Remove(path)
+	err := os.Remove(filePath)
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		rw.Write([]byte("Error: " + err.Error()))
@@ -98,7 +101,7 @@ func UpdateHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create the file
-	file, err := os.Create(path)
+	file, err := os.Create(filePath)
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		rw.Write([]byte("Error: " + err.Error()))
