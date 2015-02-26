@@ -24,7 +24,11 @@ func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	path := "/Users/sebastian/" + id
 	body, _ := ioutil.ReadAll(r.Body)
 
-	file, _ := os.Create(path)
+	file, err := os.Create(path)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		rw.Write([]byte("Error: " + err.Error()))
+	}
 	defer file.Close()
 
 	file.Write(body)
