@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
@@ -44,8 +44,8 @@ func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	file.Write(body)
 	file.Sync()
 
-	fmt.Printf("Created file with id: %s", id)
 	rw.WriteHeader(http.StatusOK)
+	log.Printf("Created file with id: %s\n", id)
 }
 
 func FileDeleteHandler(rw http.ResponseWriter, r *http.Request) {
@@ -60,6 +60,7 @@ func FileDeleteHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	rw.WriteHeader(http.StatusOK)
+	log.Printf("Deleted file with id: %s\n", id)
 }
 
 func FileGetHandler(rw http.ResponseWriter, r *http.Request) {
@@ -107,4 +108,7 @@ func FileUpdateHandler(rw http.ResponseWriter, r *http.Request) {
 
 	file.Write(body)
 	file.Sync()
+
+	rw.WriteHeader(http.StatusOK)
+	log.Printf("Updated file with id: %s\n", id)
 }
