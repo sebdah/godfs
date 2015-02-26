@@ -22,3 +22,6 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+data-node/gin-bin
+data-node/app
