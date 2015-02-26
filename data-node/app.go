@@ -15,6 +15,7 @@ func main() {
 	file := r.Path("/files/{id}").Subrouter()
 	file.Methods("GET").HandlerFunc(FileGetHandler)
 	file.Methods("POST").HandlerFunc(FileCreateHandler)
+	file.Methods("DELETE").HandlerFunc(FileDeleteHandler)
 
 	http.ListenAndServe(":"+os.Getenv("PORT"), r)
 }
@@ -36,6 +37,20 @@ func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	file.Sync()
 
 	fmt.Printf("Created file with id: %s", id)
+	rw.WriteHeader(http.StatusOK)
+}
+
+func FileDeleteHandler(rw http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	path := "/Users/sebastian/" + id
+
+	err := os.Remove(path)
+	if err != nil {
+		// Better error handling would be nice..
+		rw.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	rw.WriteHeader(http.StatusOK)
 }
 
