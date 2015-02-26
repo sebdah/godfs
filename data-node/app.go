@@ -24,20 +24,26 @@ func FileCreateHandler(rw http.ResponseWriter, r *http.Request) {
 	path := "/Users/sebastian/" + id
 	body, _ := ioutil.ReadAll(r.Body)
 
-	f, _ := os.Create(path)
-	defer f.Close()
+	file, _ := os.Create(path)
+	defer file.Close()
 
-	f.Write(body)
-	f.Sync()
+	file.Write(body)
+	file.Sync()
 
-	fmt.Fprintf(rw, "Created file with id: %s", id)
+	fmt.Printf("Created file with id: %s", id)
+	rw.WriteHeader(http.StatusOK)
 }
 
 func FileGetHandler(rw http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	path := "/Users/sebastian/" + id
 
-	data, _ := ioutil.ReadFile(path)
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		rw.WriteHeader(http.StatusNotFound)
+		return
+	}
 
-	fmt.Fprint(rw, string(data))
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(data)
 }
